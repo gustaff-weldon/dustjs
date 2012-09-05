@@ -13,13 +13,13 @@ var benches = {
   },
 
   array: {
-    source:   "{{#names}}{{name}}{{/names}}",
-    context:  { names: [{name: "Moe"}, {name: "Larry"}, {name: "Curly"}, {name: "Shemp"}] }
+    source:  "{{#names}}{{name}}{{/names}}",
+    context: { names: [{name: "Moe"}, {name: "Larry"}, {name: "Curly"}, {name: "Shemp"}] }
   },
 
   object: {
-    source:   "{{#person}}{{name}}{{age}}{{/person}}",
-    context:  { person: { name: "Larry", age: 45 } }
+    source:  "{{#person}}{{name}}{{age}}{{/person}}",
+    context: { person: { name: "Larry", age: 45 } }
   },
 
   partial: {
@@ -36,7 +36,7 @@ var benches = {
                   {
                     name: '1.1',
                     kids: [
-                      {name: '1.1.1'}
+                      {name: '1.1.1', kids: []}
                     ]
                   }
                 ]
@@ -47,6 +47,11 @@ var benches = {
   filter: {
     source:   "{{#filter}}foo {{bar}}{{/filter}}",
     context:  {
+                filter: function() {
+                  return function(text, render) {
+                    return text.toUpperCase(); //WTF BUG render is not defined
+                  }
+                },
                 bar: "bar"
               }
   },
@@ -55,7 +60,7 @@ var benches = {
     source:  "<h1>{{header}}</h1>{{#hasItems}}<ul>{{#items}}{{#current}}" +
              "<li><strong>{{name}}</strong></li>{{/current}}{{^current}}" +
              "<li><a href=\"{{url}}\">{{name}}</a></li>{{/current}}"      +
-             "{{/items}}</ul>{{^}}<p>The list is empty.</p>{{/hasItems}}",
+             "{{/items}}</ul>{{/hasItems}}{{^hasItems}}<p>The list is empty.</p>{{/hasItems}}",
     context: {
                header: function() {
                  return "Colors";
@@ -64,40 +69,31 @@ var benches = {
                  {name: "red", current: true, url: "#Red"},
                  {name: "green", current: false, url: "#Green"},
                  {name: "blue", current: false, url: "#Blue"}
-               ]
+               ],
+               hasItems: function() {
+                 return this.items.length !== 0;
+               },
+               empty: function() {
+                 return this.items.length === 0;
+               }
              }
   }
-
 }
 
-exports.handlebarsBench = function(suite, name, id) {
+exports.hoganBench = function(suite, name, id) {
   var bench = benches[name],
-      fn = Handlebars.compile(bench.source),
+      src = bench.source,
       ctx = bench.context,
-      partials = {};
+      partials = bench.partials;
 
-  if (bench.partials) {
-    for (var key in bench.partials) {
-      partials[key] = Handlebars.compile(bench.partials[key]);
-    }
-  }
-
-  Handlebars.registerHelper('filter', function(block) {
-         return block.fn( this ).toUpperCase();
-  });
-
-  Handlebars.registerHelper('hasItems', function(block) {
-      if (this.items.length) {
-        return block.fn( this );
-      }
-  });
+  var hoganCompiled = Hogan.compile( bench.source );
 
   suite.bench(id || name, function(next) {
-    fn(ctx, {partials: partials});
+    hoganCompiled.render( ctx, partials );
     next();
   });
-}
+};
 
-exports.handlebarsBench.benches = benches;
+exports.hoganBench.benches = benches;
 
 })(typeof exports !== "undefined" ? exports : window);

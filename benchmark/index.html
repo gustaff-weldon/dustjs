@@ -69,7 +69,7 @@
 
     <div id="content">
       <div id="charts"></div>
-      <p style="clear: both">Targets: <a href="http://akdubya.github.com/dustjs">Dust</a>, <a href="http://github.com/wycats/handlebars.js">Handlebars</a>, <a href="http://mustache.github.com/">Mustache</a>, <a href="http://api.jquery.com/tmpl/">jquery-tmpl</a>. Each benchmark runs once using an adaptive test cycles algorithm similar to the one found in <a href="http://github.com/broofa/jslitmus">jslitmus</a>.</p>
+      <p style="clear: both">Targets: <a href="http://akdubya.github.com/dustjs">Dust</a>, <a href="http://github.com/wycats/handlebars.js">Handlebars</a>, <a href="https://github.com/twitter/hogan.js">Hogan.js</a>, <a href="http://mustache.github.com/">Mustache</a>, <a href="http://api.jquery.com/tmpl/">jquery-tmpl</a>. Each benchmark runs once using an adaptive test cycles algorithm similar to the one found in <a href="http://github.com/broofa/jslitmus">jslitmus</a>.</p>
     </div>
 
     <script src="../vendor/jquery.min.js"></script>
@@ -77,10 +77,12 @@
     <script src="../dist/dust-full-0.3.0.min.js"></script>
     <script src="suites/dust_suite.js"></script>
     <script src="suites/mustache_suite.js"></script>
+    <script src="suites/hogan_suite.js"></script>
     <script src="suites/handlebars_suite.js"></script>
     <script src="suites/jquery_suite.js"></script>
-    <script src="http://github.com/wycats/handlebars.js/raw/766497bb553a926c046c5e5b50ee35529d168ba5/lib/handlebars.js"></script>
-    <script src="http://github.com/janl/mustache.js/raw/master/mustache.js"></script>
+    <script src="http://tryhandlebarsjs.com/js/libs/handlebars-1.0.0.beta.6.js"></script>
+    <script src="http://twitter.github.com/hogan.js/builds/2.0.0/hogan-2.0.0.js"></script>
+    <script src="https://raw.github.com/janl/mustache.js/master/mustache.js"></script>
     <script src="http://github.com/jquery/jquery-tmpl/raw/master/jquery.tmpl.js"></script>
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <script type="text/javascript">
@@ -134,6 +136,7 @@
           dustBench(suite, type, "dust");
           handlebarsBench(suite, type, "handlebars");
           mustacheBench(suite, type, "mustache");
+          hoganBench(suite, type, "hogan")
           jqueryBench(suite, type, "jquery");
           suite.run();
         }
